@@ -1,0 +1,16 @@
+{
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "extensions": [
+        "dbaeumer.vscode-eslint"
+    ],
+    "forwardPorts": [
+        3000,
+        5000
+    ],
+    "mounts": [
+        // "type=bind,source=${localEnv:DEVRESOURCES}/NODE.JS APPLICATION DEVELOPMENT (LFW211)/labs,target=${containerWorkspaceFolder}/labs,consistency=delegated"
+    ],
+    "postCreateCommand": "git config --global user.email \"krave@qq.com\" && git config --global user.name \"Krave\" && git init && git add . && git commit -m 'start point'"
+}
