@@ -3,6 +3,7 @@
         "dockerfile": "Dockerfile"
     },
     "extensions": [
+        "eamodio.gitlens",
         "dbaeumer.vscode-eslint"
     ],
     "forwardPorts": [
