@@ -12,6 +12,7 @@
     ],
     "mounts": [
         // "type=bind,source=${localEnv:DEVRESOURCES}/NODE.JS APPLICATION DEVELOPMENT (LFW211)/labs,target=${containerWorkspaceFolder}/labs,consistency=delegated"
-    ]
-    // "postCreateCommand": "git config --global user.email \"krave@qq.com\" && git config --global user.name \"Krave\""
+    ],
+    "workspaceMount": "source=source-volume,target=/workspace,type=volume",
+    "workspaceFolder": "/workspace/nodejs"
 }
