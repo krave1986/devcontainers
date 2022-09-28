@@ -14,5 +14,6 @@
         // "type=bind,source=${localEnv:DEVRESOURCES}/NODE.JS APPLICATION DEVELOPMENT (LFW211)/labs,target=${containerWorkspaceFolder}/labs,consistency=delegated"
     ],
     "workspaceMount": "source=source-volume,target=/workspace,type=volume",
-    "workspaceFolder": "/workspace/nodejs"
+    // "workspaceMount": "source=your-volume-name-here,target=/workspace,type=volume",
+    "workspaceFolder": "/workspace"
 }
