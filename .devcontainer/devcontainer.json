@@ -10,6 +10,7 @@
         3000,
         5000
     ],
+    "remoteUser": "nodejs",
     "mounts": [
         // "type=bind,source=${localEnv:DEVRESOURCES}/NODE.JS APPLICATION DEVELOPMENT (LFW211)/labs,target=${containerWorkspaceFolder}/labs,consistency=delegated"
     ],
