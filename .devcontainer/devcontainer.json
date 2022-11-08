@@ -16,5 +16,6 @@
     ],
     "workspaceMount": "source=source-volume,target=/workspace,type=volume",
     // "workspaceMount": "source=your-volume-name-here,target=/workspace,type=volume",
-    "workspaceFolder": "/workspace"
+    "workspaceFolder": "/workspace",
+    "postCreateCommand": "sudo chown -R nodejs /workspace"
 }
