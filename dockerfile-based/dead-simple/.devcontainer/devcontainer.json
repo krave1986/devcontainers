@@ -1,0 +1,7 @@
+{
+    // 使用 dockerfile-based 模式：通过 Dockerfile 构建镜像，适合需要自定义环境的场景
+    "name": "dead-simple-alpine",
+
+    // 指定 Dockerfile 文件，VS Code 会根据此文件构建镜像
+    "dockerFile": "Dockerfile"
+}
