@@ -1,0 +1,18 @@
+services:
+  code-sync:
+    image: nrt.vultrcr.com/wulicoco/code-sync
+    volumes:
+      - ..:/source
+      - volume-of-hanhanmap:/workspaces
+    environment:
+    - PROJECT_ROOT=frontend
+  hanhanmap-frontend:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - volume-of-hanhanmap:/workspace
+    working_dir: /workspace/frontend
+    command: sleep infinity
+volumes:
+  volume-of-hanhanmap:

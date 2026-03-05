@@ -1,0 +1,10 @@
+{
+    "name": "hanhanmap-frontend",
+    "dockerComposeFile": "compose.yaml",
+    "service": "hanhanmap-frontend",
+    "workspaceFolder": "/workspace/frontend",
+    "onCreateCommand": "docker compose -f .devcontainer/compose.yaml run --rm code-sync",
+    "features": {
+        "ghcr.io/devcontainers/features/docker-outside-of-docker": {}
+    }
+}
