@@ -1,0 +1,39 @@
+services:
+
+  # code-sync 是一个初始化容器，负责在开发容器启动前，
+  # 将宿主机的源代码同步到共享 volume 中。
+  # 它不会随 `docker compose up` 自动启动，
+  # 而是由 devcontainer.json 的 onCreateCommand 显式触发（通过 `run --rm`）。
+  code-sync:
+    # 私有镜像，存放在 Vultr Container Registry。
+    # Docker image 引用不需要 https:// 协议头，Docker CLI 自行处理通信。
+    image: nrt.vultrcr.com/wulicoco/code-sync
+    volumes:
+      # 将宿主机的 frontend 目录（compose.yaml 上一级）挂载为 /source。
+      # 相对路径是相对于 compose.yaml 所在目录解析的。
+      - ..:/source
+      # 将共享 volume 挂载为 /workspaces，code-sync 会将代码同步至此。
+      # 主开发容器也挂载了同一个 volume，实现代码共享。
+      - volume-of-hanhan:/workspaces
+    environment:
+      # 告知 code-sync 要同步的子目录名称。
+      # code-sync 的 ENTRYPOINT 脚本会读取此变量，
+      # 将 /source 下对应的子目录同步到 /workspaces 中。
+      - PROJECT_ROOT=frontend
+
+  hanhanmap-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      # 挂载共享 volume，与 code-sync 同步的代码共用同一个 volume。
+      - volume-of-hanhan:/workspace
+    working_dir: /workspace/frontend
+    # sleep infinity 是必须的。
+    # 容器启动后必须有一个持续运行的前台进程，否则容器会立即退出，
+    # VSCode 将无法连接（报错：container is not running）。
+    command: sleep infinity
+
+volumes:
+  # 共享 volume：code-sync 写入，hanhanmap-frontend 读取。
+  volume-of-hanhan:

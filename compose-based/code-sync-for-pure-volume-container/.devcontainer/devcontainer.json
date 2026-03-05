@@ -1,0 +1,33 @@
+{
+    "name": "hanhanmap-frontend",
+    "dockerComposeFile": "compose.yaml",
+    "service": "hanhanmap-frontend",
+    "workspaceFolder": "/workspace/frontend",
+
+    // onCreateCommand 在容器创建后、VSCode 连接前执行一次。
+    // 这里通过 DooD（Docker outside of Docker）调用宿主机的 Docker daemon，
+    // 运行 code-sync 将宿主机源代码同步到共享 volume 中。
+    //
+    // ⚠️ 路径解析问题（待确认）：
+    // `-f .devcontainer/compose.yaml` 的路径在 DooD 场景下能正常解析，
+    // 但具体是在容器内解析还是宿主机语境下解析，目前尚不明确。
+    // 已提交 issue 至 devcontainers/cli 寻求官方解答：
+    // https://github.com/devcontainers/cli/issues/1166
+    "onCreateCommand": "docker compose -f .devcontainer/compose.yaml run --rm code-sync",
+
+    "features": {
+        // Docker outside of Docker（DooD）feature，由 Microsoft 官方维护。
+        // 它会自动完成以下工作：
+        //   1. 在容器内安装 Docker CLI
+        //   2. 将宿主机的 /var/run/docker.sock 挂载进容器
+        //   3. 将容器用户加入 docker 用户组
+        // 因此 compose.yaml 中无需手动挂载 socket。
+        //
+        // 安全说明：DooD 本质上是将 Docker socket 暴露给容器，
+        // 容器内的 root 权限等同于宿主机 root，这是 DooD 固有风险。
+        //
+        // 版本策略：不锁定版本，跟随 feature 自动升级，
+        // 安全维护责任完全委托给 Microsoft 官方维护团队。
+        "ghcr.io/devcontainers/features/docker-outside-of-docker": {}
+    }
+}
