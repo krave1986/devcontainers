@@ -76,3 +76,70 @@ docker compose -f .devconteline/compose.yaml run --rm code-sync
 ## 安全说明
 
 DooD 将宿主机的 Docker socket 暴露给容器，容器内的 root 权限本质上等同于宿主机 root。这是 DooD 方案固有的安全风险，与 feature 版本无关，使用前请知悉。
+
+# 日志分析发现
+
+## 测试环境
+
+- VS Code 1.110.0 + Dev Containers 0.442.0
+- Docker Engine 29.2.1
+- Docker Compose 5.1.0
+- 宿主机：Ubuntu 5.15.0-171-generic
+
+---
+
+## 发现一：`onCreateCommand` 不是严格的"只跑一次"
+
+VSCode 通过一个 **marker 文件**来判断是否需要执行 `onCreateCommand`：
+
+```
+/root/.devcontainer/.onCreateCommandMarker
+```
+
+逻辑是：将 marker 文件中的时间戳与当前 session 时间戳对比，不匹配则重新执行。
+
+**结论：每次 VSCode 认为需要初始化时，都会触发 `onCreateCommand`，而不仅限于容器第一次创建。**
+
+对于 code-sync 场景，这是好事——每次重新连接都会重新同步代码。
+
+---
+
+## 发现二：DooD feature 的注入方式
+
+在日志的 Docker Compose override 文件中，可以看到 VSCode 自动注入了：
+
+```yaml
+volumes:
+  - /var/run/docker.sock:/var/run/docker-host.sock
+  - vscode:/vscode
+```
+
+这证实了 `docker-outside-of-docker` feature 的 socket 挂载，是由 VSCode Dev Containers CLI 在运行时动态注入的，而不是写在 `compose.yaml` 里的。
+
+---
+
+## 发现三：全新环境下 `onCreateCommand` 依然成功
+
+第二次测试中，日志明确显示：
+
+```
+New container started. Keep-alive process started.
+```
+
+这是全新容器，volume 已清空。但 `onCreateCommand` 依然成功执行：
+
+```
+Start: Run in container: /bin/sh -c docker compose -f .devcontainer/compose.yaml run --rm code-sync
+你妹妹的！
+```
+
+---
+
+## 未解之谜
+
+日志中**没有**任何 bind mount 或文件拷贝的痕迹，但容器内的 `docker compose` CLI 能够找到 `.devcontainer/compose.yaml`。
+
+**为什么能找到这个文件，目前无法从日志中得出结论。**
+
+已提交 issue 等待官方解答：
+> [What is the path resolution context of `onCreateCommand` when using Docker outside of Docker (DooD)? · devcontainers/cli #1166](https://github.com/devcontainers/cli/issues/1166)
